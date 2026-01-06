@@ -12,7 +12,7 @@ app.use("/api/auth", authRoutes);
 app.get("/", (_, res) => {
     res.status(200).json({
         success: true,
-        message: "Welcome to User Authentication API",
+        message: "Welcome to Evently"
     });
 });
 
