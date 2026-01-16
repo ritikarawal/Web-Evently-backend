@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
 import { HttpError } from "../errors/http-error";
+import { IUser } from "../models/user.model";
 
 const userRepo = new UserRepository();
 
@@ -21,10 +22,18 @@ export class UserService {
 
         const hashedPassword = await bcrypt.hash(data.password, 10);
 
-        return await userRepo.createUser({
+        const user = await userRepo.createUser({
             ...data,
             password: hashedPassword,
         });
+
+        const token = jwt.sign(
+            { id: user._id, role: user.role },
+            JWT_SECRET,
+            { expiresIn: "30d" }
+        );
+
+        return { token, user };
     }
 
     async login(data: LoginUserDTO) {
@@ -35,7 +44,7 @@ export class UserService {
 
         const validPassword = await bcrypt.compare(
             data.password,
-            user.password
+            user.password as string
         );
         if (!validPassword) {
             throw new HttpError(401, "Invalid credentials");
