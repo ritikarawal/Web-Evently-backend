@@ -12,4 +12,12 @@ export class UserRepository {
     async getUserByUsername(username: string) {
         return await UserModel.findOne({ username });
     }
+
+    async updateUser(userId: string, data: Partial<IUser>) {
+        return await UserModel.findByIdAndUpdate(
+            userId,
+            { $set: data },
+            { new: true }
+        ).select("-password");
+    }
 }
