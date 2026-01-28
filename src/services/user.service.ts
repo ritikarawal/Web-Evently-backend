@@ -58,4 +58,16 @@ export class UserService {
 
         return { token, user };
     }
+
+    async updateProfilePicture(userId: string, profilePictureUrl: string) {
+        const user = await userRepo.updateUser(userId, {
+            profilePicture: profilePictureUrl,
+        });
+
+        if (!user) {
+            throw new HttpError(404, "User not found");
+        }
+
+        return user;
+    }
 }
