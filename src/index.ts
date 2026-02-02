@@ -2,12 +2,15 @@ import express from "express";
 import path from "path";
 import { connectDatabase } from "./database/mongodb";
 import authRoutes from "./routes/auth.route";
+import { AuthController } from "./controllers/auth.controller";
+import { authMiddleware } from "./middlewares/auth.middleware";
 import eventRoutes from "./routes/event.route";
 import { PORT } from "./config";
 import cors from "cors";
 import userRoutes from "./routes/admin/user.routes";
 
 const app = express();
+const authController = new AuthController();
 
 app.use(express.json());
 app.use(cors({
@@ -29,8 +32,8 @@ app.use("/uploads", (req, res, next) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.get("/api/auth/profile", authMiddleware, authController.getProfile.bind(authController));
 app.use("/api/events", eventRoutes);
-app.use("/api/admin", userRoutes);
 app.use("/api/admin/users", userRoutes);
 
 app.get("/", (_, res) => {

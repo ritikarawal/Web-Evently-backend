@@ -38,12 +38,15 @@ export class AdminUserController {
 
     async getAllUsers(req: Request, res: Response, next: NextFunction) {
         try {
+            console.log('[AdminUserController.getAllUsers] Starting fetch');
             const users = await adminUserService.getAllUsers();
+            console.log('[AdminUserController.getAllUsers] Found', users.length, 'users');
             const sanitizedUsers = users.map((user) => sanitizeUser(user));
             return res.status(200).json(
                 { success: true, data: sanitizedUsers, message: "All Users Retrieved" }
             );
         } catch (error: Error | any) {
+            console.error('[AdminUserController.getAllUsers] Error:', error.message);
             return res.status(error.statusCode ?? 500).json(
                 { success: false, message: error.message || "Internal Server Error" }
             );
