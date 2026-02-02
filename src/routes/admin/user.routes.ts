@@ -1,12 +1,12 @@
 import { Router } from "express";
-import {  adminMiddleware, authMiddleware } from "../../middlewares/auth.middleware";
+import { adminMiddleware, authorizedMiddleware } from "../../middlewares/authorized.middleware";
 import { AdminUserController } from "../../controllers/admin/user.controller";
 import { uploadProfilePicture } from "../../middlewares/upload.middleware";
 let adminUserController = new AdminUserController();
 
 const router = Router();
 
-router.use(authMiddleware); // apply all with middleware
+router.use(authorizedMiddleware); // apply all with middleware
 router.use(adminMiddleware); // apply all with middleware
 
 router.post("/", uploadProfilePicture.single("image"), adminUserController.createUser);

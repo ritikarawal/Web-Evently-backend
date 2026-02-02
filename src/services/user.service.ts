@@ -70,4 +70,15 @@ export class UserService {
 
         return user;
     }
+
+    async getProfile(userId: string) {
+        const user = await userRepo.getUserById(userId);
+        if (!user) {
+            throw new HttpError(404, "User not found");
+        }
+
+        const userObject = user.toObject();
+        delete (userObject as any).password;
+        return userObject;
+    }
 }

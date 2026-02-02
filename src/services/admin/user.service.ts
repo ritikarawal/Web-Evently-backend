@@ -42,6 +42,9 @@ export class AdminUserService {
         if(!user){
             throw new HttpError(404, "User not found");
         }
+        if (updateData.password) {
+            updateData.password = await bcryptjs.hash(updateData.password, 10);
+        }
         const updatedUser = await userRepository.updateUser(id, updateData);
         return updatedUser;
     }

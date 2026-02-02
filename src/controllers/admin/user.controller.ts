@@ -5,6 +5,13 @@ import { AdminUserService } from "../../services/admin/user.service";
 
 let adminUserService = new AdminUserService();
 
+const sanitizeUser = (user: any) => {
+    if (!user) return user;
+    const obj = typeof user.toObject === "function" ? user.toObject() : { ...user };
+    delete obj.password;
+    return obj;
+};
+
 export class AdminUserController {
     async createUser(req: Request, res: Response, next: NextFunction) {
         try {
@@ -15,12 +22,12 @@ export class AdminUserController {
                 )
             }
             if(req.file){   
-                parsedData.data.imageUrl = `/uploads/${req.file.filename}`;
+                parsedData.data.profilePicture = `/uploads/profile-pictures/${req.file.filename}`;
             }
             const userData: CreateUserDTO = parsedData.data;
             const newUser = await adminUserService.createUser(userData);
             return res.status(201).json(
-                { success: true, message: "User Created", data: newUser }
+                { success: true, message: "User Created", data: sanitizeUser(newUser) }
             );
         } catch (error: Error | any) {
             return res.status(error.statusCode ?? 500).json(
@@ -32,8 +39,9 @@ export class AdminUserController {
     async getAllUsers(req: Request, res: Response, next: NextFunction) {
         try {
             const users = await adminUserService.getAllUsers();
+            const sanitizedUsers = users.map((user) => sanitizeUser(user));
             return res.status(200).json(
-                { success: true, data: users, message: "All Users Retrieved" }
+                { success: true, data: sanitizedUsers, message: "All Users Retrieved" }
             );
         } catch (error: Error | any) {
             return res.status(error.statusCode ?? 500).json(
@@ -53,12 +61,12 @@ export class AdminUserController {
             }
             
             if(req.file){   
-                parsedData.data.imageUrl = `/uploads/${req.file.filename}`;
+                parsedData.data.profilePicture = `/uploads/profile-pictures/${req.file.filename}`;
             }
             const updateData: UpdateUserDTO = parsedData.data;
             const updatedUser = await adminUserService.updateUser(userId, updateData);
             return res.status(200).json(
-                { success: true, message: "User Updated", data: updatedUser }
+                { success: true, message: "User Updated", data: sanitizeUser(updatedUser) }
             );
         }
         catch (error: Error | any) {
@@ -92,7 +100,7 @@ export class AdminUserController {
             const userId = req.params.id;
             const user = await adminUserService.getUserById(userId);
             return res.status(200).json(
-                { success: true, data: user, message: "Single User Retrieved" }
+                { success: true, data: sanitizeUser(user), message: "Single User Retrieved" }
             );
         } catch (error: Error | any) {
             return res.status(error.statusCode ?? 500).json(

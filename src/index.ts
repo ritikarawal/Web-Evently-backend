@@ -5,6 +5,7 @@ import authRoutes from "./routes/auth.route";
 import eventRoutes from "./routes/event.route";
 import { PORT } from "./config";
 import cors from "cors";
+import userRoutes from "./routes/admin/user.routes";
 
 const app = express();
 
@@ -29,6 +30,8 @@ app.use("/uploads", (req, res, next) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/admin", userRoutes);
+app.use("/api/admin/users", userRoutes);
 
 app.get("/", (_, res) => {
     res.status(200).json({
