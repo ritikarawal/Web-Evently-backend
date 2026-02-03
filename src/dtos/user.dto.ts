@@ -7,6 +7,9 @@ export const CreateUserDTO = UserSchema.pick({
     password: true,
     firstName: true,
     lastName: true,
+    phoneNumber: true,
+    role: true,
+    profilePicture: true,
 }).extend({
     confirmPassword: z.string().min(6),
 }).refine(
@@ -25,3 +28,6 @@ export const LoginUserDTO = z.object({
 });
 
 export type LoginUserDTO = z.infer<typeof LoginUserDTO>;
+
+export const UpdateUserDTO = UserSchema.partial(); // all attributes optional
+export type UpdateUserDTO = z.infer<typeof UpdateUserDTO>;

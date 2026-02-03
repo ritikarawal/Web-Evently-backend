@@ -77,4 +77,22 @@ export class AuthController {
             });
         }
     }
+
+    async getProfile(req: Request, res: Response) {
+        try {
+            const userId = (req as any).userId;
+            const user = await userService.getProfile(userId);
+
+            return res.status(200).json({
+                success: true,
+                message: "Profile fetched successfully",
+                data: user,
+            });
+        } catch (error: any) {
+            return res.status(error.statusCode ?? 500).json({
+                success: false,
+                message: error.message || "Internal server error",
+            });
+        }
+    }
 }

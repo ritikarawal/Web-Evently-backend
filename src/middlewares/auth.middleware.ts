@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
+import { HttpError } from "../errors/http-error";
+
 
 export interface AuthenticatedRequest extends Request {
-    userId?: string;
+    userId?: string & { role?: string };
 }
 
 export const authMiddleware = (
@@ -35,4 +37,22 @@ export const authMiddleware = (
             message: "Invalid or expired token",
         });
     }
+
 };
+export const adminMiddleware = async (
+    req: AuthenticatedRequest, res: Response, next: NextFunction
+) => {
+    try {
+        if (!req.userId) {
+            throw new HttpError(401, 'Unauthorized no user info');
+        }
+        if (req.userId.role !== 'admin') {
+            throw new HttpError(403, 'Forbidden not admin');
+        }
+        return next();
+    } catch (err: Error | any) {
+        return res.status(err.statusCode || 500).json(
+            { success: false, message: err.message }
+        )
+    }
+}
