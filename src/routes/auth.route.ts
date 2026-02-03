@@ -9,6 +9,7 @@ const authController = new AuthController();
 router.post("/register", authController.register.bind(authController));
 router.post("/login", authController.login.bind(authController));
 router.get("/profile", authMiddleware, authController.getProfile.bind(authController));
+router.put("/profile", authMiddleware, authController.updateProfile.bind(authController));
 router.post(
     "/user/profile-picture",
     authMiddleware,

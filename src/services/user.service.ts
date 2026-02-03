@@ -81,4 +81,42 @@ export class UserService {
         delete (userObject as any).password;
         return userObject;
     }
+
+    async updateProfile(userId: string, data: Partial<IUser>) {
+        const existingUser = await userRepo.getUserById(userId);
+        if (!existingUser) {
+            throw new HttpError(404, "User not found");
+        }
+
+        if (data.email && data.email !== existingUser.email) {
+            const emailExists = await userRepo.getUserByEmail(data.email);
+            if (emailExists) {
+                throw new HttpError(400, "Email already exists");
+            }
+        }
+
+        if (data.username && data.username !== existingUser.username) {
+            const usernameExists = await userRepo.getUserByUsername(data.username);
+            if (usernameExists) {
+                throw new HttpError(400, "Username already exists");
+            }
+        }
+
+        const updateData: Partial<IUser> = Object.fromEntries(
+            Object.entries(data).filter(([, value]) => value !== undefined)
+        ) as Partial<IUser>;
+
+        if (data.password) {
+            updateData.password = await bcrypt.hash(data.password, 10);
+        }
+
+        const updatedUser = await userRepo.updateUser(userId, updateData);
+        if (!updatedUser) {
+            throw new HttpError(404, "User not found");
+        }
+
+        const userObject = updatedUser.toObject();
+        delete (userObject as any).password;
+        return userObject;
+    }
 }

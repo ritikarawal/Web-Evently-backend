@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/user.service";
+import { UpdateUserDTO } from "../dtos/user.dto";
 
 const userService = new UserService();
 
@@ -87,6 +88,50 @@ export class AuthController {
                 success: true,
                 message: "Profile fetched successfully",
                 data: user,
+            });
+        } catch (error: any) {
+            return res.status(error.statusCode ?? 500).json({
+                success: false,
+                message: error.message || "Internal server error",
+            });
+        }
+    }
+
+    async updateProfile(req: Request, res: Response) {
+        try {
+            const userId = (req as any).userId;
+            const {
+                firstName,
+                lastName,
+                username,
+                email,
+                phoneNumber,
+                password,
+            } = req.body;
+
+            const updatePayload = {
+                firstName,
+                lastName,
+                username,
+                email,
+                phoneNumber,
+                password,
+            };
+
+            const parsedData = UpdateUserDTO.safeParse(updatePayload);
+            if (!parsedData.success) {
+                return res.status(400).json({
+                    success: false,
+                    message: parsedData.error.issues[0]?.message || "Invalid profile data",
+                });
+            }
+
+            const updatedUser = await userService.updateProfile(userId, parsedData.data);
+
+            return res.status(200).json({
+                success: true,
+                message: "Profile updated successfully",
+                data: updatedUser,
             });
         } catch (error: any) {
             return res.status(error.statusCode ?? 500).json({
