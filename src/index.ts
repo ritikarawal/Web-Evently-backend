@@ -8,6 +8,7 @@ import eventRoutes from "./routes/event.route";
 import { PORT } from "./config";
 import cors from "cors";
 import userRoutes from "./routes/admin/user.routes";
+import adminEventRoutes from "./routes/admin/event.routes";
 
 const app = express();
 const authController = new AuthController();
@@ -35,6 +36,7 @@ app.use("/api/auth", authRoutes);
 app.get("/api/auth/profile", authMiddleware, authController.getProfile.bind(authController));
 app.use("/api/events", eventRoutes);
 app.use("/api/admin/users", userRoutes);
+app.use("/api/admin/events", adminEventRoutes);
 
 app.get("/", (_, res) => {
     res.status(200).json({

@@ -200,4 +200,52 @@ export class EventService {
             };
         }
     }
+
+    async getEventsByStatus(status: 'pending' | 'approved' | 'declined'): Promise<IEvent[]> {
+        try {
+            const events = await EventModel.find({ status })
+                .populate("organizer", "username email firstName lastName")
+                .populate("attendees", "username email firstName lastName")
+                .sort({ createdAt: -1 });
+
+            return events;
+        } catch (error: any) {
+            throw {
+                statusCode: 400,
+                message: "Failed to fetch events by status",
+            };
+        }
+    }
+
+    async updateEventStatus(
+        eventId: string,
+        status: 'pending' | 'approved' | 'declined',
+        adminNotes?: string
+    ): Promise<IEvent | null> {
+        try {
+            const updateData: any = { status };
+            if (adminNotes !== undefined) {
+                updateData.adminNotes = adminNotes;
+            }
+
+            const event = await EventModel.findByIdAndUpdate(
+                eventId,
+                { $set: updateData },
+                { new: true }
+            )
+                .populate("organizer", "username email firstName lastName")
+                .populate("attendees", "username email firstName lastName");
+
+            if (!event) {
+                throw { statusCode: 404, message: "Event not found" };
+            }
+
+            return event;
+        } catch (error: any) {
+            throw {
+                statusCode: error.statusCode || 400,
+                message: error.message || "Failed to update event status",
+            };
+        }
+    }
 }

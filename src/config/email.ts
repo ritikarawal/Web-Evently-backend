@@ -13,7 +13,7 @@ export const transporter = nodemailer.createTransport({
 export const sendEmail = async (to: string, subject: string, html: string) => {
     console.log(`Attempting to send email to: ${to}, subject: ${subject}`);
     const mailOptions = {
-        from: `Mero app <${EMAIL_USER}>`,
+        from: `Evently <${EMAIL_USER}>`,
         to,
         subject,
         html,

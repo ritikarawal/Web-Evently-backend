@@ -13,6 +13,8 @@ export interface IEvent extends Document {
     organizer: mongoose.Types.ObjectId;
     attendees: mongoose.Types.ObjectId[];
     isPublic: boolean;
+    status: 'pending' | 'approved' | 'declined';
+    adminNotes?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -26,7 +28,7 @@ const EventSchema: Schema = new Schema(
         location: { type: String, required: true },
         category: { 
             type: String, 
-            enum: ["music", "sports", "education", "business", "entertainment", "other"],
+            enum: ["music", "sports", "education", "business", "entertainment", "birthday", "other"],
             default: "other" 
         },
         eventImage: { type: String },
@@ -44,6 +46,12 @@ const EventSchema: Schema = new Schema(
             }
         ],
         isPublic: { type: Boolean, default: true },
+        status: { 
+            type: String, 
+            enum: ["pending", "approved", "declined"], 
+            default: "pending" 
+        },
+        adminNotes: { type: String },
     },
     { timestamps: true }
 );
