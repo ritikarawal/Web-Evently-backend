@@ -1,5 +1,5 @@
 import { CreateUserDTO, LoginUserDTO, UpdateUserDTO } from "../../dtos/user.dto";
-import { UserRepository } from "../../repositories/user.repository";
+import { UserRepository } from "../../infrastructure/repositories/user.repository";
 import  bcryptjs from "bcryptjs"
 import { HttpError } from "../../errors/http-error";
 

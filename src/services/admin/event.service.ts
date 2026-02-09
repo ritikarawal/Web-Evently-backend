@@ -1,4 +1,4 @@
-import { EventModel, IEvent } from "../models/event.model";
+import { EventModel, IEvent } from "../../domain/entities/event.model";
 import mongoose from "mongoose";
 
 export class EventService {

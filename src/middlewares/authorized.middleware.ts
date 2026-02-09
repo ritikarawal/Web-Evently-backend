@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { JWT_SECRET } from '../config';
 import jwt from 'jsonwebtoken';
-import { IUser } from '../models/user.model';
-import { UserRepository } from '../repositories/user.repository';
+import { IUser } from '../domain/entities/user.model';
+ import { UserRepository } from '../infrastructure/repositories/user.repository';
 import { HttpError } from '../errors/http-error';
 
 declare global {

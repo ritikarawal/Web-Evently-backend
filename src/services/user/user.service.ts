@@ -1,11 +1,11 @@
-import { CreateUserDTO, LoginUserDTO } from "../dtos/user.dto";
-import { UserRepository } from "../repositories/user.repository";
+import { CreateUserDTO, LoginUserDTO } from "../../dtos/user.dto";
+import { UserRepository } from "../../infrastructure/repositories/user.repository";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../config";
-import { HttpError } from "../errors/http-error";
-import { IUser } from "../models/user.model";
-import { sendEmail } from "../config/email";
+import { JWT_SECRET } from "../../config";
+import { HttpError } from "../../errors/http-error";
+import { IUser } from "../../domain/entities/user.model";
+import { sendEmail } from "../../config/email";
 const CLIENT_URL = process.env.CLIENT_URL as string;
 
 const userRepo = new UserRepository();

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { EventService } from "../services/event.service";
+import { EventService } from "../services/admin/event.service";
 
 const eventService = new EventService();
 

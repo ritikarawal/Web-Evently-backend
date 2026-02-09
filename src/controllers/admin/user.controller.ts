@@ -2,6 +2,7 @@ import { CreateUserDTO, LoginUserDTO, UpdateUserDTO } from "../../dtos/user.dto"
 import { Request, Response, NextFunction } from "express";
 import z from "zod";
 import { AdminUserService } from "../../services/admin/user.service";
+import { IUser } from "../../domain/entities/user.model";
 
 let adminUserService = new AdminUserService();
 
@@ -41,7 +42,7 @@ export class AdminUserController {
             console.log('[AdminUserController.getAllUsers] Starting fetch');
             const users = await adminUserService.getAllUsers();
             console.log('[AdminUserController.getAllUsers] Found', users.length, 'users');
-            const sanitizedUsers = users.map((user) => sanitizeUser(user));
+            const sanitizedUsers = users.map((user: IUser) => sanitizeUser(user));
             return res.status(200).json(
                 { success: true, data: sanitizedUsers, message: "All Users Retrieved" }
             );
