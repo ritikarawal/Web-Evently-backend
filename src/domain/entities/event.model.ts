@@ -28,7 +28,7 @@ const EventSchema: Schema = new Schema(
         location: { type: String, required: true },
         category: { 
             type: String, 
-            enum: ["music", "sports", "education", "business", "entertainment", "birthday", "graduation", "other"],
+            enum: ["music", "sports", "education", "business", "entertainment", "birthday", "graduation", "anniversary", "other"],
             default: "other" 
         },
         eventImage: { type: String },

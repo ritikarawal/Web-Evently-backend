@@ -122,10 +122,11 @@ export class EventService {
                 throw { statusCode: 404, message: "Event not found" };
             }
 
-            if (event.organizer.toString() !== userId) {
+            // Allow admin to delete any event, or organizer to delete their own event
+            if (userId !== "admin" && event.organizer.toString() !== userId) {
                 throw {
                     statusCode: 403,
-                    message: "Only organizer can delete this event",
+                    message: "Only organizer or admin can delete this event",
                 };
             }
 
@@ -245,6 +246,36 @@ export class EventService {
             throw {
                 statusCode: error.statusCode || 400,
                 message: error.message || "Failed to update event status",
+            };
+        }
+    }
+
+    async getAllEventsForAdmin(filters?: any): Promise<IEvent[]> {
+        try {
+            const query: any = {}; // No isPublic filter for admin
+
+            if (filters?.status) query.status = filters.status;
+            if (filters?.category) query.category = filters.category;
+            if (filters?.search) {
+                query.$or = [
+                    { title: { $regex: filters.search, $options: "i" } },
+                    { description: { $regex: filters.search, $options: "i" } },
+                ];
+            }
+            if (filters?.startDate) {
+                query.startDate = { $gte: new Date(filters.startDate) };
+            }
+
+            const events = await EventModel.find(query)
+                .populate("organizer", "username email firstName lastName")
+                .sort({ createdAt: -1 })
+                .limit(100); // Higher limit for admin
+
+            return events;
+        } catch (error: any) {
+            throw {
+                statusCode: 400,
+                message: "Failed to fetch events for admin",
             };
         }
     }

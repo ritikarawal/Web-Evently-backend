@@ -107,10 +107,27 @@ export class AdminEventController {
             });
         }
     }
+    async deleteEvent(req: Request, res: Response) {
+        try {
+            const { eventId } = req.params;
+
+            await eventService.deleteEvent(eventId, "admin"); // Pass "admin" as userId since admin can delete any event
+
+            return res.status(200).json({
+                success: true,
+                message: "Event deleted successfully",
+            });
+        } catch (error: any) {
+            return res.status(error.statusCode ?? 500).json({
+                success: false,
+                message: error.message || "Failed to delete event",
+            });
+        }
+    }
 
     async getAllEvents(req: Request, res: Response) {
         try {
-            const events = await eventService.getAllEvents({});
+            const events = await eventService.getAllEventsForAdmin({});
 
             return res.status(200).json({
                 success: true,
