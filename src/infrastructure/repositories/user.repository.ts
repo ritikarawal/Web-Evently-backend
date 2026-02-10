@@ -7,6 +7,7 @@ export interface IUserRepository {
     createUser(userData: Partial<IUser>): Promise<IUser>;
     getUserById(id: string): Promise<IUser | null>;
     getAllUsers(): Promise<IUser[]>;
+    getUsersPaginated(page: number, limit: number): Promise<{ users: IUser[]; total: number; totalPages: number; currentPage: number }>;
     updateUser(id: string, updateData: Partial<IUser>): Promise<IUser | null>;
     deleteUser(id: string): Promise<boolean>;
 }
@@ -33,6 +34,18 @@ export class UserRepository implements IUserRepository {
     async getAllUsers(): Promise<IUser[]> {
         const users = await UserModel.find();
         return users;
+    }
+    async getUsersPaginated(page: number, limit: number): Promise<{ users: IUser[]; total: number; totalPages: number; currentPage: number }> {
+        const skip = (page - 1) * limit;
+        const users = await UserModel.find().skip(skip).limit(limit);
+        const total = await UserModel.countDocuments();
+        const totalPages = Math.ceil(total / limit);
+        return {
+            users,
+            total,
+            totalPages,
+            currentPage: page,
+        };
     }
     async updateUser(id: string, updateData: Partial<IUser>): Promise<IUser | null> {
         // UserModel.updateOne({ _id: id }, { $set: updateData });
