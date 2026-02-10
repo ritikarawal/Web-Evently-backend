@@ -13,7 +13,7 @@ export interface IEvent extends Document {
     organizer: mongoose.Types.ObjectId;
     attendees: mongoose.Types.ObjectId[];
     isPublic: boolean;
-    status: 'pending' | 'approved' | 'declined';
+    status: 'draft' | 'published' | 'cancelled' | 'pending' | 'approved' | 'declined';
     adminNotes?: string;
     createdAt: Date;
     updatedAt: Date;
@@ -26,30 +26,30 @@ const EventSchema: Schema = new Schema(
         startDate: { type: Date, required: true },
         endDate: { type: Date, required: true },
         location: { type: String, required: true },
-        category: { 
-            type: String, 
-            enum: ["music", "sports", "education", "business", "entertainment", "birthday", "graduation", "anniversary", "other"],
-            default: "other" 
+        category: {
+            type: String,
+            enum: ["birthday", "anniversary", "wedding", "engagement", "workshop", "conference", "graduation", "fundraisers", "music", "sports", "education", "business", "entertainment", "other"],
+            default: "other"
         },
         eventImage: { type: String },
         capacity: { type: Number },
         ticketPrice: { type: Number, default: 0 },
-        organizer: { 
-            type: Schema.Types.ObjectId, 
-            ref: "User", 
-            required: true 
+        organizer: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: true
         },
         attendees: [
-            { 
-                type: Schema.Types.ObjectId, 
-                ref: "User" 
+            {
+                type: Schema.Types.ObjectId,
+                ref: "User"
             }
         ],
         isPublic: { type: Boolean, default: true },
-        status: { 
-            type: String, 
-            enum: ["pending", "approved", "declined"], 
-            default: "pending" 
+        status: {
+            type: String,
+            enum: ["draft", "published", "cancelled", "pending", "approved", "declined"],
+            default: "draft"
         },
         adminNotes: { type: String },
     },
