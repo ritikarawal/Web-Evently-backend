@@ -15,6 +15,18 @@ export interface IEvent extends Document {
     isPublic: boolean;
     status: 'draft' | 'published' | 'cancelled' | 'pending' | 'approved' | 'declined';
     adminNotes?: string;
+    // Budget negotiation fields
+    proposedBudget?: number;        // User's initial budget suggestion
+    adminProposedBudget?: number;   // Admin's counter-proposal
+    finalBudget?: number;           // Agreed upon budget
+    budgetStatus: 'pending' | 'negotiating' | 'accepted' | 'rejected';
+    budgetNegotiationHistory?: Array<{
+        proposer: 'user' | 'admin';
+        proposerId?: mongoose.Types.ObjectId;
+        amount: number;
+        message?: string;
+        timestamp: Date;
+    }>;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -52,6 +64,29 @@ const EventSchema: Schema = new Schema(
             default: "draft"
         },
         adminNotes: { type: String },
+        // Budget negotiation fields
+        proposedBudget: { type: Number },
+        adminProposedBudget: { type: Number },
+        finalBudget: { type: Number },
+        budgetStatus: {
+            type: String,
+            enum: ["pending", "negotiating", "accepted", "rejected"],
+            default: "pending"
+        },
+        budgetNegotiationHistory: [{
+            proposer: {
+                type: String,
+                enum: ["user", "admin"],
+                required: true
+            },
+            proposerId: {
+                type: Schema.Types.ObjectId,
+                ref: "User"
+            },
+            amount: { type: Number, required: true },
+            message: { type: String },
+            timestamp: { type: Date, default: Date.now }
+        }],
     },
     { timestamps: true }
 );

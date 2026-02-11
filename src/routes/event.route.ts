@@ -18,4 +18,8 @@ router.delete("/:eventId", eventController.deleteEvent);
 router.post("/:eventId/join", eventController.joinEvent);
 router.post("/:eventId/leave", eventController.leaveEvent);
 
+// Budget negotiation routes
+router.put("/:eventId/budget-response", eventController.respondToBudgetProposal);
+router.get("/:eventId/budget-history", eventController.getBudgetNegotiationHistory);
+
 export default router;

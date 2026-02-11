@@ -141,4 +141,32 @@ export class AdminEventController {
             });
         }
     }
+
+    async proposeBudget(req: Request, res: Response) {
+        try {
+            const { eventId } = req.params;
+            const { proposedBudget, message } = req.body;
+            const adminId = req.user?._id.toString(); // Assuming user ID is available from auth middleware
+
+            if (!proposedBudget || proposedBudget <= 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Valid proposed budget is required",
+                });
+            }
+
+            const event = await eventService.proposeBudget(eventId, adminId, proposedBudget, message);
+
+            return res.status(200).json({
+                success: true,
+                message: "Budget proposal sent successfully",
+                data: event,
+            });
+        } catch (error: any) {
+            return res.status(error.statusCode ?? 500).json({
+                success: false,
+                message: error.message || "Failed to propose budget",
+            });
+        }
+    }
 }

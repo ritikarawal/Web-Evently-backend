@@ -166,4 +166,43 @@ export class EventController {
             });
         }
     }
+
+    async respondToBudgetProposal(req: Request, res: Response) {
+        try {
+            const userId = (req as any).userId;
+            const { eventId } = req.params;
+            const { accepted, counterProposal, message } = req.body;
+
+            const event = await eventService.respondToBudgetProposal(eventId, userId, accepted, counterProposal, message);
+
+            return res.status(200).json({
+                success: true,
+                message: accepted ? "Budget accepted successfully" : "Budget response sent successfully",
+                data: event,
+            });
+        } catch (error: any) {
+            return res.status(error.statusCode ?? 500).json({
+                success: false,
+                message: error.message || "Failed to respond to budget proposal",
+            });
+        }
+    }
+
+    async getBudgetNegotiationHistory(req: Request, res: Response) {
+        try {
+            const { eventId } = req.params;
+            const history = await eventService.getBudgetNegotiationHistory(eventId);
+
+            return res.status(200).json({
+                success: true,
+                message: "Budget negotiation history fetched successfully",
+                data: history,
+            });
+        } catch (error: any) {
+            return res.status(error.statusCode ?? 500).json({
+                success: false,
+                message: error.message || "Failed to fetch budget negotiation history",
+            });
+        }
+    }
 }

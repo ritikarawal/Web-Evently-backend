@@ -28,6 +28,11 @@ export class AdminUserService {
         return users;
     }
 
+    async getAdminUsers(){
+        const admins = await userRepository.getAdminUsers();
+        return admins;
+    }
+
     async getUsersPaginated(data: GetUsersDTO){
         const { page, limit } = data;
         const result = await userRepository.getUsersPaginated(page, limit);

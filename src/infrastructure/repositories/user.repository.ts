@@ -8,6 +8,7 @@ export interface IUserRepository {
     getUserById(id: string): Promise<IUser | null>;
     getAllUsers(): Promise<IUser[]>;
     getUsersPaginated(page: number, limit: number): Promise<{ users: IUser[]; total: number; totalPages: number; currentPage: number }>;
+    getAdminUsers(): Promise<IUser[]>;
     updateUser(id: string, updateData: Partial<IUser>): Promise<IUser | null>;
     deleteUser(id: string): Promise<boolean>;
 }
@@ -46,6 +47,10 @@ export class UserRepository implements IUserRepository {
             totalPages,
             currentPage: page,
         };
+    }
+    async getAdminUsers(): Promise<IUser[]> {
+        const admins = await UserModel.find({ role: "admin" });
+        return admins;
     }
     async updateUser(id: string, updateData: Partial<IUser>): Promise<IUser | null> {
         // UserModel.updateOne({ _id: id }, { $set: updateData });
