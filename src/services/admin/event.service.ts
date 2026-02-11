@@ -35,7 +35,10 @@ export class EventService {
 
     async getAllEvents(filters?: any): Promise<IEvent[]> {
         try {
-            const query: any = { isPublic: true };
+            const query: any = { 
+                isPublic: true, 
+                status: { $in: ['approved', 'published'] } // Include both approved and published events
+            };
 
             if (filters?.category) query.category = filters.category;
             if (filters?.search) {
