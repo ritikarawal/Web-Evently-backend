@@ -510,4 +510,59 @@ export class EventService {
             };
         }
     }
+
+    async acceptUserBudgetProposal(eventId: string, adminId: string): Promise<IEvent> {
+        try {
+            const event = await EventModel.findById(eventId);
+            if (!event) {
+                throw {
+                    statusCode: 404,
+                    message: "Event not found",
+                };
+            }
+
+            if (event.status !== 'pending') {
+                throw {
+                    statusCode: 400,
+                    message: `Cannot accept budget proposal: Event is already ${event.status}. Budget proposals can only be accepted for events in pending status.`,
+                };
+            }
+
+            // Set final budget to user's current proposal
+            event.finalBudget = event.proposedBudget;
+            event.budgetStatus = 'accepted';
+            event.status = 'approved';
+
+            // Add to negotiation history
+            if (!event.budgetNegotiationHistory) {
+                event.budgetNegotiationHistory = [];
+            }
+            event.budgetNegotiationHistory.push({
+                proposer: 'admin',
+                proposerId: new mongoose.Types.ObjectId(adminId),
+                amount: event.finalBudget!,
+                message: `Admin accepted user's budget proposal: $${event.finalBudget}`,
+                timestamp: new Date()
+            });
+
+            await event.save();
+
+            // Notify the organizer
+            const notificationService = new NotificationService();
+            await notificationService.createNotification(
+                event.organizer.toString(),
+                "Budget Proposal Accepted",
+                `Your budget proposal of $${event.finalBudget} has been accepted! Your event "${event.title}" is now approved and ready for payment processing.`,
+                "event_approved",
+                eventId
+            );
+
+            return event;
+        } catch (error: any) {
+            throw {
+                statusCode: error.statusCode || 400,
+                message: error.message || "Failed to accept user's budget proposal",
+            };
+        }
+    }
 }

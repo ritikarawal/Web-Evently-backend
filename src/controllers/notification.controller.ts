@@ -72,9 +72,19 @@ export class NotificationController {
 
     async getUnreadCount(req: Request, res: Response) {
         try {
-            const userId = (req.user as any)._id.toString();
+            const userId = (req.user as any)?._id?.toString();
+            console.log('Getting unread count for user:', userId);
+
+            if (!userId) {
+                console.error('No user ID found in request');
+                return res.status(401).json({
+                    success: false,
+                    message: "User not authenticated",
+                });
+            }
 
             const count = await notificationService.getUnreadCount(userId);
+            console.log('Unread count for user', userId, ':', count);
 
             return res.status(200).json({
                 success: true,
@@ -82,6 +92,7 @@ export class NotificationController {
                 data: { unreadCount: count },
             });
         } catch (error: any) {
+            console.error('Error in getUnreadCount:', error);
             return res.status(error.statusCode ?? 500).json({
                 success: false,
                 message: error.message || "Failed to get unread count",

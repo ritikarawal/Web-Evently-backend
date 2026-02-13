@@ -12,6 +12,7 @@ router.get("/pending", adminEventController.getPendingEvents);
 router.put("/:eventId/approve", adminEventController.approveEvent);
 router.put("/:eventId/decline", adminEventController.declineEvent);
 router.put("/:eventId/budget-proposal", adminEventController.proposeBudget);
+router.put("/:eventId/accept-user-budget", adminEventController.acceptUserBudgetProposal);
 router.delete("/:eventId", adminEventController.deleteEvent);
 router.get("/", adminEventController.getAllEvents);
 

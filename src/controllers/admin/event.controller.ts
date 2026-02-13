@@ -169,4 +169,24 @@ export class AdminEventController {
             });
         }
     }
+
+    async acceptUserBudgetProposal(req: Request, res: Response) {
+        try {
+            const { eventId } = req.params;
+            const adminId = req.user?._id.toString();
+
+            const event = await eventService.acceptUserBudgetProposal(eventId, adminId);
+
+            return res.status(200).json({
+                success: true,
+                message: "User's budget proposal accepted successfully",
+                data: event,
+            });
+        } catch (error: any) {
+            return res.status(error.statusCode ?? 500).json({
+                success: false,
+                message: error.message || "Failed to accept user's budget proposal",
+            });
+        }
+    }
 }
