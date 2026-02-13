@@ -127,12 +127,22 @@ export class AdminEventController {
 
     async getAllEvents(req: Request, res: Response) {
         try {
-            const events = await eventService.getAllEventsForAdmin({});
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 10;
+            const filters = req.query;
+
+            const result = await eventService.getAllEventsForAdminPaginated({ page, limit, ...filters });
 
             return res.status(200).json({
                 success: true,
                 message: "All events fetched successfully",
-                data: events,
+                data: result.events,
+                pagination: {
+                    currentPage: result.currentPage,
+                    totalPages: result.totalPages,
+                    total: result.total,
+                    limit: result.limit
+                }
             });
         } catch (error: any) {
             return res.status(error.statusCode ?? 500).json({

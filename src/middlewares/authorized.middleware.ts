@@ -44,21 +44,28 @@ export const authorizedMiddleware =
         }
     }
 
-export const adminMiddleware = async (
+export const adminMiddleware = (
     req: Request, res: Response, next: NextFunction
 ) => {
     try {
         console.log('[adminMiddleware] req.user:', req.user ? `${req.user.firstName} (${req.user.role})` : 'missing');
         if (!req.user) {
-            throw new HttpError(401, 'Unauthorized no user info');
+            console.log('[adminMiddleware] No user found');
+            return res.status(401).json({
+                success: false,
+                message: 'Unauthorized no user info'
+            });
         }
         if (req.user.role !== 'admin') {
+            console.log('[adminMiddleware] User role is not admin:', req.user.role);
             throw new HttpError(403, 'Forbidden not admin');
         }
+        console.log('[adminMiddleware] User is admin, proceeding');
         return next();
     } catch (err: Error | any) {
+        console.log('[adminMiddleware] Caught error:', err.message);
         return res.status(err.statusCode || 500).json(
             { success: false, message: err.message }
-        )
+        );
     }
 }

@@ -1,14 +1,17 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/user/user.service";
-import { UpdateUserDTO } from "../dtos/user.dto";
+import { UpdateUserDTO, CreateUserDTO } from "../dtos/user.dto";
 
 const userService = new UserService();
 
 export class AuthController {
     async register(req: Request, res: Response) {
         try {
+            // Validate input data
+            const validatedData = CreateUserDTO.parse(req.body);
+
             // Note: Ensure your service returns { user, token }
-            const { user, token } = await userService.register(req.body);
+            const { user, token } = await userService.register(validatedData);
 
             return res.status(201).json({
                 success: true,
@@ -17,6 +20,13 @@ export class AuthController {
                 data: user,
             });
         } catch (error: any) {
+            if (error.name === 'ZodError') {
+                return res.status(400).json({
+                    success: false,
+                    message: "Validation failed",
+                    errors: error.errors,
+                });
+            }
             return res.status(error.statusCode ?? 500).json({
                 success: false,
                 message: error.message || "Internal server error",

@@ -306,26 +306,37 @@ export class EventService {
         }
     }
 
-    async getAllEventsForAdmin(filters?: any): Promise<IEvent[]> {
+    async getAllEventsForAdminPaginated(options: { page: number; limit: number; status?: string; category?: string; search?: string }): Promise<{ events: IEvent[]; currentPage: number; totalPages: number; total: number; limit: number }> {
         try {
+            const { page, limit, status, category, search } = options;
             const query: any = {}; // No isPublic filter for admin
 
-            if (filters?.status) query.status = filters.status;
-            if (filters?.category) query.category = filters.category;
-            if (filters?.search) {
+            if (status) query.status = status;
+            if (category) query.category = category;
+            if (search) {
                 query.$or = [
-                    { title: { $regex: filters.search, $options: "i" } },
-                    { description: { $regex: filters.search, $options: "i" } },
+                    { title: { $regex: search, $options: "i" } },
+                    { description: { $regex: search, $options: "i" } },
                 ];
             }
-            if (filters?.startDate) {
-                query.startDate = { $gte: new Date(filters.startDate) };
-            }
+
+            const skip = (page - 1) * limit;
             const events = await EventModel.find(query)
                 .populate("organizer", "username email firstName lastName")
                 .sort({ createdAt: -1 })
-                .limit(100); // Higher limit for admin
-            return events;
+                .skip(skip)
+                .limit(limit);
+
+            const total = await EventModel.countDocuments(query);
+            const totalPages = Math.ceil(total / limit);
+
+            return {
+                events,
+                currentPage: page,
+                totalPages,
+                total,
+                limit
+            };
         } catch (error: any) {
             throw {
                 statusCode: 400,
