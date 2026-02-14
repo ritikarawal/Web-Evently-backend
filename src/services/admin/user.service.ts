@@ -1,5 +1,5 @@
-import { CreateUserDTO, LoginUserDTO, UpdateUserDTO } from "../../dtos/user.dto";
-import { UserRepository } from "../../repositories/user.repository";
+import { CreateUserDTO, LoginUserDTO, UpdateUserDTO, GetUsersDTO } from "../../dtos/user.dto";
+import { UserRepository } from "../../infrastructure/repositories/user.repository";
 import  bcryptjs from "bcryptjs"
 import { HttpError } from "../../errors/http-error";
 
@@ -26,6 +26,17 @@ export class AdminUserService {
     async getAllUsers(){
         const users = await userRepository.getAllUsers();
         return users;
+    }
+
+    async getAdminUsers(){
+        const admins = await userRepository.getAdminUsers();
+        return admins;
+    }
+
+    async getUsersPaginated(data: GetUsersDTO){
+        const { page, limit } = data;
+        const result = await userRepository.getUsersPaginated(page, limit);
+        return result;
     }
 
     async deleteUser(id: string){

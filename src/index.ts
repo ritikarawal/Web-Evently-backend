@@ -8,6 +8,8 @@ import eventRoutes from "./routes/event.route";
 import { PORT } from "./config";
 import cors from "cors";
 import userRoutes from "./routes/admin/user.routes";
+import adminEventRoutes from "./routes/admin/event.routes";
+import notificationRoutes from "./routes/notification.routes";
 
 const app = express();
 const authController = new AuthController();
@@ -35,6 +37,8 @@ app.use("/api/auth", authRoutes);
 app.get("/api/auth/profile", authMiddleware, authController.getProfile.bind(authController));
 app.use("/api/events", eventRoutes);
 app.use("/api/admin/users", userRoutes);
+app.use("/api/admin/events", adminEventRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.get("/", (_, res) => {
     res.status(200).json({
@@ -51,4 +55,9 @@ async function startServer() {
     });
 }
 
-startServer();
+// Only start server if this file is run directly (not imported for testing)
+if (require.main === module) {
+    startServer();
+}
+
+export { app };

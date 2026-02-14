@@ -1,14 +1,17 @@
 import { Request, Response } from "express";
-import { UserService } from "../services/user.service";
-import { UpdateUserDTO } from "../dtos/user.dto";
+import { UserService } from "../services/user/user.service";
+import { UpdateUserDTO, CreateUserDTO } from "../dtos/user.dto";
 
 const userService = new UserService();
 
 export class AuthController {
     async register(req: Request, res: Response) {
         try {
+            // Validate input data
+            const validatedData = CreateUserDTO.parse(req.body);
+
             // Note: Ensure your service returns { user, token }
-            const { user, token } = await userService.register(req.body);
+            const { user, token } = await userService.register(validatedData);
 
             return res.status(201).json({
                 success: true,
@@ -17,6 +20,13 @@ export class AuthController {
                 data: user,
             });
         } catch (error: any) {
+            if (error.name === 'ZodError') {
+                return res.status(400).json({
+                    success: false,
+                    message: "Validation failed",
+                    errors: error.errors,
+                });
+            }
             return res.status(error.statusCode ?? 500).json({
                 success: false,
                 message: error.message || "Internal server error",
@@ -138,6 +148,38 @@ export class AuthController {
                 success: false,
                 message: error.message || "Internal server error",
             });
+        }
+    }
+    async sendResetPasswordEmail(req: Request, res: Response) {
+        try {
+            const email = req.body.email;
+            const user = await userService.sendResetPasswordEmail(email);
+            return res.status(200).json(
+                { success: true,
+                    data: user,
+                    message: "If the email is registered, a reset link has been sent." }
+            );
+        } catch (error: Error | any) {
+            console.error("Error in sendResetPasswordEmail:", error);
+            return res.status(error.statusCode ?? 500).json(
+                { success: false, message: error.message || "Failed to send reset email. Please try again later." }
+            );
+        }
+    }
+
+    async resetPassword(req: Request, res: Response) {
+        try {
+
+           const token = req.params.token;
+            const { newPassword } = req.body;
+            await userService.resetPassword(token, newPassword);
+            return res.status(200).json(
+                { success: true, message: "Password has been reset successfully." }
+            );
+        } catch (error: Error | any) {
+            return res.status(error.statusCode ?? 500).json(
+                { success: false, message: error.message  || "Internal Server Error" }
+            );
         }
     }
 }

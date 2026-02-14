@@ -16,5 +16,7 @@ router.post(
     uploadProfilePicture.single("profilePicture"),
     authController.updateProfilePicture.bind(authController)
 );
+router.post("/request-password-reset", authController.sendResetPasswordEmail);
+router.post("/reset-password/:token", authController.resetPassword);
 
 export default router;
