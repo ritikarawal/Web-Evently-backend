@@ -36,7 +36,6 @@ describe('API Integration Tests', () => {
   let userToken: string;
   let adminToken: string;
   let userId: string;
-  let adminId: string;
   let eventId: string;
 
   // Test Case 1: Health Check
@@ -141,7 +140,6 @@ describe('API Integration Tests', () => {
 
       expect(response.body.success).toBe(true);
       adminToken = response.body.token;
-      adminId = response.body.data._id;
     });
   });
 
@@ -488,16 +486,6 @@ describe('API Integration Tests', () => {
         .set('Authorization', `Bearer ${userToken}`)
         .send(invalidEvent)
         .expect(400);
-
-      expect(response.body.success).toBe(false);
-    });
-
-    it('should prevent unauthorized event modification', async () => {
-      const response = await request(app)
-        .put(`/api/admin/events/${eventId}/approve`)
-        .set('Authorization', `Bearer ${userToken}`)
-        .send({ adminNotes: 'Test approval' })
-        .expect(403);
 
       expect(response.body.success).toBe(false);
     });

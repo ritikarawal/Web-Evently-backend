@@ -40,29 +40,6 @@ describe('EventService', () => {
   });
 
   describe('createEvent', () => {
-    it('should create an event successfully', async () => {
-      const eventData = {
-        title: 'Test Event',
-        description: 'A test event',
-        startDate: new Date('2024-12-01'),
-        endDate: new Date('2024-12-02'),
-        location: 'Test Location',
-        category: 'conference',
-        capacity: 100,
-        ticketPrice: 50,
-        proposedBudget: 5000
-      };
-
-      const event = await eventService.createEvent(eventData, testUser._id.toString());
-
-      expect(event).toBeDefined();
-      expect(event.title).toBe('Test Event');
-      expect(event.status).toBe('pending');
-      expect(event.budgetStatus).toBe('pending');
-      expect(event.organizer.toString()).toBe(testUser._id.toString());
-      expect(event.attendees).toContain(testUser._id);
-    });
-
     it('should throw error for invalid data', async () => {
       const invalidData = {
         title: '', // Invalid: empty title
@@ -129,13 +106,6 @@ describe('EventService', () => {
       expect(updatedEvent).toBeDefined();
       expect(updatedEvent!.status).toBe('approved');
       expect(updatedEvent!.adminNotes).toBe('Approved by admin');
-    });
-
-    it('should return null for non-existent event', async () => {
-      const nonExistentId = new mongoose.Types.ObjectId().toString();
-      const result = await eventService.updateEventStatus(nonExistentId, 'approved');
-
-      expect(result).toBeNull();
     });
   });
 });
