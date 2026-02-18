@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { VenueService } from "../../services/admin/venue.service";
+import { VenueService } from "../services/admin/venue.service";
 
 const venueService = new VenueService();
 
