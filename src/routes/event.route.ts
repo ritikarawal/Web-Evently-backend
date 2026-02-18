@@ -7,21 +7,19 @@ const eventController = new EventController();
 
 // Public routes
 router.get("/", eventController.getAllEvents);
+router.get("/:eventId", eventController.getEvent);
 
-// Protected routes - Define JOIN/LEAVE before generic :eventId routes
-router.post("/:eventId/join", authMiddleware, eventController.joinEvent);
-router.post("/:eventId/leave", authMiddleware, eventController.leaveEvent);
-router.put("/:eventId/budget-response", authMiddleware, eventController.respondToBudgetProposal);
-router.get("/:eventId/budget-history", authMiddleware, eventController.getBudgetNegotiationHistory);
-
-// Protected CRUD routes
+// Protected routes
 router.use(authMiddleware);
 router.post("/", eventController.createEvent);
 router.get("/user/my-events", eventController.getUserEvents);
 router.put("/:eventId", eventController.updateEvent);
 router.delete("/:eventId", eventController.deleteEvent);
+router.post("/:eventId/join", eventController.joinEvent);
+router.post("/:eventId/leave", eventController.leaveEvent);
 
-// Generic public route (GET single event) - placed last to avoid conflicts
-router.get("/:eventId", eventController.getEvent);
+// Budget negotiation routes
+router.put("/:eventId/budget-response", eventController.respondToBudgetProposal);
+router.get("/:eventId/budget-history", eventController.getBudgetNegotiationHistory);
 
 export default router;
