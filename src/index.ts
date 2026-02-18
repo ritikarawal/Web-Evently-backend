@@ -36,6 +36,7 @@ app.use("/uploads", (req, res, next) => {
 app.use("/api/auth", authRoutes);
 app.get("/api/auth/profile", authMiddleware, authController.getProfile.bind(authController));
 app.use("/api/events", eventRoutes);
+app.use("/api/tickets", ticketRoutes);
 app.use("/api/admin/users", userRoutes);
 app.use("/api/admin/events", adminEventRoutes);
 app.use("/api/notifications", notificationRoutes);
