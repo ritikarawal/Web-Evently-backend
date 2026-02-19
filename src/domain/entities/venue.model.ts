@@ -2,11 +2,11 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IVenue extends Document {
     name: string;
-    description: string;
     address: string;
     city: string;
-    state: string;
-    zipCode: string;
+    description?: string;
+    state?: string;
+    zipCode?: string;
     country: string;
     capacity: number;
     pricePerHour?: number;
@@ -36,11 +36,11 @@ export interface IVenue extends Document {
 const VenueSchema: Schema = new Schema(
     {
         name: { type: String, required: true },
-        description: { type: String, required: true },
+        description: { type: String },
         address: { type: String, required: true },
         city: { type: String, required: true },
-        state: { type: String, required: true },
-        zipCode: { type: String, required: true },
+        state: { type: String },
+        zipCode: { type: String },
         country: { type: String, required: true },
         capacity: { type: Number, required: true },
         pricePerHour: { type: Number },

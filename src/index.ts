@@ -5,6 +5,7 @@ import authRoutes from "./routes/auth.route";
 import { AuthController } from "./controllers/auth.controller";
 import { authMiddleware } from "./middlewares/auth.middleware";
 import eventRoutes from "./routes/event.route";
+import venueRoutes from "./routes/venue.route";
 import { PORT } from "./config";
 import cors from "cors";
 import userRoutes from "./routes/admin/user.routes";
@@ -36,6 +37,7 @@ app.use("/uploads", (req, res, next) => {
 app.use("/api/auth", authRoutes);
 app.get("/api/auth/profile", authMiddleware, authController.getProfile.bind(authController));
 app.use("/api/events", eventRoutes);
+app.use("/api/venues", venueRoutes);
 app.use("/api/admin/users", userRoutes);
 app.use("/api/admin/events", adminEventRoutes);
 app.use("/api/notifications", notificationRoutes);
