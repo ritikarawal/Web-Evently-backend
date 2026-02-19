@@ -60,6 +60,10 @@ export class VenueService {
                     { address: { $regex: filters.search, $options: "i" } }
                 ];
             }
+            if (filters?.recommendedCategory) {
+                // match recommendedCategory case-insensitively
+                query.recommendedCategory = { $regex: `^${filters.recommendedCategory}$`, $options: "i" };
+            }
 
             const venues = await VenueModel.find(query)
                 .populate("createdBy", "username email firstName lastName")

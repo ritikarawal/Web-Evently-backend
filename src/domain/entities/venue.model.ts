@@ -28,6 +28,7 @@ export interface IVenue extends Document {
     rating: number;
     reviewCount: number;
     isActive: boolean;
+    recommendedCategory?: string;
     createdBy: mongoose.Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
@@ -90,6 +91,7 @@ const VenueSchema: Schema = new Schema(
         rating: { type: Number, default: 0, min: 0, max: 5 },
         reviewCount: { type: Number, default: 0 },
         isActive: { type: Boolean, default: true },
+        recommendedCategory: { type: String },
         createdBy: {
             type: Schema.Types.ObjectId,
             ref: "User",
