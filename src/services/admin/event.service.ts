@@ -61,11 +61,12 @@ export class EventService {
 
     async getAllEvents(filters?: any): Promise<IEvent[]> {
         try {
-            const query: any = { 
-                isPublic: true, 
-                status: { $in: ['approved', 'published'] } // Include both approved and published events
-            };
-
+            const query: any = {};
+            // Only add isPublic/status if not present in filters
+            if (filters?.isPublic !== undefined) query.isPublic = filters.isPublic;
+            else query.isPublic = true;
+            if (filters?.status) query.status = Array.isArray(filters.status) ? { $in: filters.status } : filters.status;
+            else query.status = { $in: ['approved', 'published'] };
             if (filters?.category) query.category = filters.category;
             if (filters?.search) {
                 query.$or = [
@@ -283,6 +284,10 @@ export class EventService {
             const updateData: any = { status };
             if (adminNotes !== undefined) {
                 updateData.adminNotes = adminNotes;
+            }
+            // If approving, ensure isPublic is true (for public events)
+            if (status === 'approved') {
+                updateData.isPublic = true;
             }
 
             const event = await EventModel.findByIdAndUpdate(
