@@ -79,6 +79,10 @@ export class VenueService {
         }
     }
 
+    /**
+     * Update venue details, including pricing array.
+     * To update pricing, pass { pricing: [...] } in data.
+     */
     async updateVenue(venueId: string, data: Partial<IVenue>, userId: string): Promise<IVenue | null> {
         try {
             const venue = await VenueModel.findById(venueId);
@@ -95,9 +99,15 @@ export class VenueService {
                 };
             }
 
+            // If pricing is present, replace the pricing array
+            const updateData = { ...data };
+            if (data.pricing) {
+                updateData.pricing = data.pricing;
+            }
+
             const updatedVenue = await VenueModel.findByIdAndUpdate(
                 venueId,
-                { $set: data },
+                { $set: updateData },
                 { new: true }
             ).populate("createdBy", "username email firstName lastName");
 

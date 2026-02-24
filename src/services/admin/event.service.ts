@@ -10,6 +10,7 @@ export class EventService {
         try {
             const event = new EventModel({
                 ...data,
+                eventType: data.eventType || 'free',
                 organizer: organizerId,
                 attendees: [organizerId], // Organizer is an attendee
                 status: 'pending', // Events start as pending for admin approval
@@ -133,7 +134,7 @@ export class EventService {
             }
 
             // Set status to pending for admin approval when organizer updates
-            const updateData = { ...data, status: 'pending' };
+            const updateData = { ...data, eventType: data.eventType || event.eventType || 'free', status: 'pending' };
 
             const updatedEvent = await EventModel.findByIdAndUpdate(
                 eventId,

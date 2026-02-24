@@ -11,6 +11,11 @@ export interface IVenue extends Document {
     capacity: number;
     pricePerHour?: number;
     pricePerDay?: number;
+    pricing?: Array<{
+        type: string; // e.g., 'hourly', 'daily', 'custom'
+        amount: number;
+        description?: string;
+    }>;
     amenities: string[];
     images: string[];
     contactPerson: string;
@@ -46,6 +51,17 @@ const VenueSchema: Schema = new Schema(
         capacity: { type: Number, required: true },
         pricePerHour: { type: Number },
         pricePerDay: { type: Number },
+        pricing: [
+            {
+                type: {
+                    type: String,
+                    enum: ["hourly", "daily", "custom"],
+                    required: true,
+                },
+                amount: { type: Number, required: true },
+                description: { type: String },
+            },
+        ],
         amenities: [{ type: String }],
         images: [{ type: String }],
         contactPerson: { type: String, required: true },

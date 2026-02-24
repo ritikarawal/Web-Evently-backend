@@ -10,6 +10,7 @@ export interface IEvent extends Document {
     eventImage?: string;
     capacity?: number;
     ticketPrice?: number;
+    eventType?: 'paid' | 'free';
     organizer: mongoose.Types.ObjectId;
     attendees: mongoose.Types.ObjectId[];
     isPublic: boolean;
@@ -46,6 +47,7 @@ const EventSchema: Schema = new Schema(
         eventImage: { type: String },
         capacity: { type: Number },
         ticketPrice: { type: Number, default: 0 },
+        eventType: { type: String, enum: ['paid', 'free'], default: 'free' },
         organizer: {
             type: Schema.Types.ObjectId,
             ref: "User",
