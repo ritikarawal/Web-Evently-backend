@@ -11,6 +11,7 @@ import cors from "cors";
 import userRoutes from "./routes/admin/user.routes";
 import adminEventRoutes from "./routes/admin/event.routes";
 import notificationRoutes from "./routes/notification.routes";
+import paymentRoutes from "./routes/payment.routes";
 
 const app = express();
 const authController = new AuthController();
@@ -40,7 +41,10 @@ app.use("/api/events", eventRoutes);
 app.use("/api/venues", venueRoutes);
 app.use("/api/admin/users", userRoutes);
 app.use("/api/admin/events", adminEventRoutes);
+
 app.use("/api/notifications", notificationRoutes);
+
+app.use("/api/payments", paymentRoutes);
 
 app.get("/", (_, res) => {
     res.status(200).json({
@@ -52,8 +56,10 @@ app.get("/", (_, res) => {
 async function startServer() {
     await connectDatabase();
 
-    app.listen(PORT, () => {
-        console.log(`Server running on http://localhost:${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`✅ Server running on port ${PORT}`);
+        console.log(`📱 For Flutter app: http:// 10.1.6.169:${PORT}`);
+        console.log(`🌐 For Web/Local: http://localhost:${PORT}`);
     });
 }
 
