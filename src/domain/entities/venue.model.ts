@@ -18,9 +18,6 @@ export interface IVenue extends Document {
     }>;
     amenities: string[];
     images: string[];
-    contactPerson: string;
-    contactEmail: string;
-    contactPhone: string;
     availability: {
         monday: { open: string; close: string; available: boolean };
         tuesday: { open: string; close: string; available: boolean };
@@ -64,9 +61,7 @@ const VenueSchema: Schema = new Schema(
         ],
         amenities: [{ type: String }],
         images: [{ type: String }],
-        contactPerson: { type: String, required: true },
-        contactEmail: { type: String, required: true },
-        contactPhone: { type: String, required: true },
+        // contactPerson, contactEmail, contactPhone removed
         availability: {
             monday: {
                 open: { type: String, default: "09:00" },
