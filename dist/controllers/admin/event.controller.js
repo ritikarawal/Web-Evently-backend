@@ -34,7 +34,7 @@ class AdminEventController {
                     : event.organizer.toString();
                 console.log('Creating notification for user:', organizerId);
                 try {
-                    await notificationService.createNotification(organizerId, "Event Approved", `Your event "${event.title}" has been approved and is now live.`, "event_approved", eventId);
+                    await notificationService.createNotification(organizerId, "Event Approved", `Your event "${event.title}" has been approved.`, "event_approved", eventId);
                     console.log('Notification created successfully');
                 }
                 catch (notificationError) {

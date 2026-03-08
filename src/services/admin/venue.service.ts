@@ -1,6 +1,9 @@
 import { VenueModel, IVenue } from "../../domain/entities/venue.model";
+import { NotificationService } from "./notification.service";
 
 export class VenueService {
+    private notificationService = new NotificationService();
+
     async createVenue(data: Partial<IVenue>, createdBy: string): Promise<IVenue> {
         try {
             const venue = new VenueModel({
@@ -8,6 +11,19 @@ export class VenueService {
                 createdBy
             });
             await venue.save();
+
+            // Notify users who are interested in this category via their event history.
+            if (venue.recommendedCategory) {
+                try {
+                    await this.notificationService.notifyUsersForNewVenueByCategory(
+                        venue.recommendedCategory,
+                        venue.name
+                    );
+                } catch (notificationError) {
+                    console.error("Failed to send new venue notifications:", notificationError);
+                }
+            }
+
             return venue;
         } catch (error: any) {
             throw {
