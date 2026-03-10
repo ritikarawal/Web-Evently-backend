@@ -2,20 +2,22 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IVenue extends Document {
     name: string;
-    description: string;
     address: string;
     city: string;
-    state: string;
-    zipCode: string;
+    description?: string;
+    state?: string;
+    zipCode?: string;
     country: string;
     capacity: number;
     pricePerHour?: number;
     pricePerDay?: number;
+    pricing?: Array<{
+        type: string; // e.g., 'hourly', 'daily', 'custom'
+        amount: number;
+        description?: string;
+    }>;
     amenities: string[];
     images: string[];
-    contactPerson: string;
-    contactEmail: string;
-    contactPhone: string;
     availability: {
         monday: { open: string; close: string; available: boolean };
         tuesday: { open: string; close: string; available: boolean };
@@ -28,6 +30,7 @@ export interface IVenue extends Document {
     rating: number;
     reviewCount: number;
     isActive: boolean;
+    recommendedCategory?: string;
     createdBy: mongoose.Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
@@ -36,20 +39,29 @@ export interface IVenue extends Document {
 const VenueSchema: Schema = new Schema(
     {
         name: { type: String, required: true },
-        description: { type: String, required: true },
+        description: { type: String },
         address: { type: String, required: true },
         city: { type: String, required: true },
-        state: { type: String, required: true },
-        zipCode: { type: String, required: true },
+        state: { type: String },
+        zipCode: { type: String },
         country: { type: String, required: true },
         capacity: { type: Number, required: true },
         pricePerHour: { type: Number },
         pricePerDay: { type: Number },
+        pricing: [
+            {
+                type: {
+                    type: String,
+                    enum: ["hourly", "daily", "custom"],
+                    required: true,
+                },
+                amount: { type: Number, required: true },
+                description: { type: String },
+            },
+        ],
         amenities: [{ type: String }],
         images: [{ type: String }],
-        contactPerson: { type: String, required: true },
-        contactEmail: { type: String, required: true },
-        contactPhone: { type: String, required: true },
+        // contactPerson, contactEmail, contactPhone removed
         availability: {
             monday: {
                 open: { type: String, default: "09:00" },
@@ -90,6 +102,7 @@ const VenueSchema: Schema = new Schema(
         rating: { type: Number, default: 0, min: 0, max: 5 },
         reviewCount: { type: Number, default: 0 },
         isActive: { type: Boolean, default: true },
+        recommendedCategory: { type: String },
         createdBy: {
             type: Schema.Types.ObjectId,
             ref: "User",

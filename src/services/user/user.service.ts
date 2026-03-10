@@ -35,7 +35,10 @@ export class UserService {
             { expiresIn: "30d" }
         );
 
-        return { token, user };
+        const userObject = user.toObject();
+        delete (userObject as any).password;
+
+        return { token, user: userObject };
     }
 
     async login(data: LoginUserDTO) {
@@ -58,7 +61,10 @@ export class UserService {
             { expiresIn: "30d" }
         );
 
-        return { token, user };
+        const userObject = user.toObject();
+        delete (userObject as any).password;
+
+        return { token, user: userObject };
     }
 
     async updateProfilePicture(userId: string, profilePictureUrl: string) {

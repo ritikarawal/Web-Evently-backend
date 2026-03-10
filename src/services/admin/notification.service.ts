@@ -1,11 +1,12 @@
 import { NotificationModel, INotification } from "../../domain/entities/notification.model";
+import { EventModel } from "../../domain/entities/event.model";
 
 export class NotificationService {
     async createNotification(
         userId: string,
         title: string,
         message: string,
-        type: 'event_approved' | 'event_declined' | 'event_updated' | 'general',
+        type: 'event_approved' | 'event_declined' | 'event_updated' | 'new_venue_category' | 'general',
         eventId?: string
     ): Promise<INotification> {
         try {
@@ -104,6 +105,53 @@ export class NotificationService {
             throw {
                 statusCode: 500,
                 message: error.message || "Failed to delete notification",
+            };
+        }
+    }
+
+    async notifyUsersForNewVenueByCategory(
+        category: string,
+        venueName: string
+    ): Promise<number> {
+        try {
+            const normalizedCategory = (category || "").trim();
+            if (!normalizedCategory) {
+                return 0;
+            }
+
+            const escapedCategory = normalizedCategory.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            const events = await EventModel.find({
+                category: { $regex: `^${escapedCategory}$`, $options: "i" },
+            }).select("organizer attendees");
+
+            const userIds = new Set<string>();
+            for (const event of events) {
+                if (event.organizer) {
+                    userIds.add(event.organizer.toString());
+                }
+                if (Array.isArray(event.attendees)) {
+                    for (const attendee of event.attendees) {
+                        userIds.add(attendee.toString());
+                    }
+                }
+            }
+
+            let createdCount = 0;
+            for (const userId of userIds) {
+                await this.createNotification(
+                    userId,
+                    "New Venue Available",
+                    `A new venue "${venueName}" is now available for ${normalizedCategory} events.`,
+                    "new_venue_category"
+                );
+                createdCount += 1;
+            }
+
+            return createdCount;
+        } catch (error: any) {
+            throw {
+                statusCode: 500,
+                message: error.message || "Failed to send venue category notifications",
             };
         }
     }

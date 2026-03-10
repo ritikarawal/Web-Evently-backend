@@ -56,6 +56,7 @@ export class VenueController {
                 priceRange: req.query.priceRange,
                 amenities: req.query.amenities,
                 search: req.query.search,
+                recommendedCategory: req.query.recommendedCategory,
             };
 
             const venues = await venueService.getAllVenues(filters);

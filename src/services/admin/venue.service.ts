@@ -1,6 +1,9 @@
 import { VenueModel, IVenue } from "../../domain/entities/venue.model";
+import { NotificationService } from "./notification.service";
 
 export class VenueService {
+    private notificationService = new NotificationService();
+
     async createVenue(data: Partial<IVenue>, createdBy: string): Promise<IVenue> {
         try {
             const venue = new VenueModel({
@@ -8,6 +11,19 @@ export class VenueService {
                 createdBy
             });
             await venue.save();
+
+            // Notify users who are interested in this category via their event history.
+            if (venue.recommendedCategory) {
+                try {
+                    await this.notificationService.notifyUsersForNewVenueByCategory(
+                        venue.recommendedCategory,
+                        venue.name
+                    );
+                } catch (notificationError) {
+                    console.error("Failed to send new venue notifications:", notificationError);
+                }
+            }
+
             return venue;
         } catch (error: any) {
             throw {
@@ -60,6 +76,10 @@ export class VenueService {
                     { address: { $regex: filters.search, $options: "i" } }
                 ];
             }
+            if (filters?.recommendedCategory) {
+                // match recommendedCategory case-insensitively
+                query.recommendedCategory = { $regex: `^${filters.recommendedCategory}$`, $options: "i" };
+            }
 
             const venues = await VenueModel.find(query)
                 .populate("createdBy", "username email firstName lastName")
@@ -75,6 +95,10 @@ export class VenueService {
         }
     }
 
+    /**
+     * Update venue details, including pricing array.
+     * To update pricing, pass { pricing: [...] } in data.
+     */
     async updateVenue(venueId: string, data: Partial<IVenue>, userId: string): Promise<IVenue | null> {
         try {
             const venue = await VenueModel.findById(venueId);
@@ -91,9 +115,15 @@ export class VenueService {
                 };
             }
 
+            // If pricing is present, replace the pricing array
+            const updateData = { ...data };
+            if (data.pricing) {
+                updateData.pricing = data.pricing;
+            }
+
             const updatedVenue = await VenueModel.findByIdAndUpdate(
                 venueId,
-                { $set: data },
+                { $set: updateData },
                 { new: true }
             ).populate("createdBy", "username email firstName lastName");
 
