@@ -99,7 +99,7 @@ class ChatSocketService {
                         from: "admin",
                         text: data.message,
                         timestamp: new Date(),
-                        isRead: true,
+                        isRead: false,
                         senderName: data.adminName
                     });
                     await chat.save();

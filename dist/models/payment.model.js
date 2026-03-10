@@ -33,28 +33,32 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NotificationModel = void 0;
+exports.PaymentModel = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
-const NotificationSchema = new mongoose_1.Schema({
-    user: {
-        type: mongoose_1.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
-    },
-    title: { type: String, required: true },
-    message: { type: String, required: true },
-    type: {
+const PaymentSchema = new mongoose_1.Schema({
+    userId: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true },
+    eventId: { type: mongoose_1.Schema.Types.ObjectId, ref: "Event", required: true },
+    amount: { type: Number, required: true },
+    paymentMethod: {
         type: String,
-        enum: ["event_approved", "event_declined", "event_updated", "new_venue_category", "general"],
-        required: true
+        enum: ["Card", "Wallet", "Demo"],
+        default: "Demo",
+        required: true,
     },
-    isRead: { type: Boolean, default: false },
-    eventId: {
-        type: mongoose_1.Schema.Types.ObjectId,
-        ref: "Event"
+    cardHolderName: { type: String, default: "" },
+    cardNumber: { type: String, default: "" },
+    expiryDate: { type: String, default: "" },
+    cvv: { type: String, default: "" },
+    paymentStatus: {
+        type: String,
+        enum: ["Pending", "Success", "Failed"],
+        default: "Pending",
+        required: true,
     },
-}, { timestamps: true });
-// Index for efficient queries
-NotificationSchema.index({ user: 1, isRead: 1, createdAt: -1 });
-exports.NotificationModel = mongoose_1.default.model("Notification", NotificationSchema);
-//# sourceMappingURL=notification.model.js.map
+    transactionId: { type: String, required: true, unique: true },
+}, {
+    timestamps: { createdAt: true, updatedAt: false },
+});
+PaymentSchema.index({ userId: 1, eventId: 1, createdAt: -1 });
+exports.PaymentModel = mongoose_1.default.model("Payment", PaymentSchema);
+//# sourceMappingURL=payment.model.js.map

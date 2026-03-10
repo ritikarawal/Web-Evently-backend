@@ -8,6 +8,37 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const chat_model_1 = require("../domain/entities/chat.model");
 const chat_service_1 = require("../services/chat.service");
 class ChatController {
+    async getUserUnreadCount(req, res) {
+        try {
+            const userId = req.userId;
+            if (!userId) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Unauthorized",
+                });
+            }
+            const chat = await chat_model_1.ChatModel.findOne({ userId }).select("messages");
+            if (!chat) {
+                return res.status(200).json({
+                    success: true,
+                    message: "Unread count fetched successfully",
+                    data: { unreadCount: 0 },
+                });
+            }
+            const unreadCount = chat.messages.filter((message) => message.from === "admin" && !message.isRead).length;
+            return res.status(200).json({
+                success: true,
+                message: "Unread count fetched successfully",
+                data: { unreadCount },
+            });
+        }
+        catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message || "Failed to get unread count",
+            });
+        }
+    }
     // Get all chats for admin
     async getAllChats(req, res) {
         try {
@@ -86,6 +117,17 @@ class ChatController {
                     message: "No chat history found",
                     data: [],
                 });
+            }
+            // When user opens chat history, mark all admin messages as read.
+            let hasUnreadAdminMessages = false;
+            for (const message of chat.messages) {
+                if (message.from === "admin" && !message.isRead) {
+                    message.isRead = true;
+                    hasUnreadAdminMessages = true;
+                }
+            }
+            if (hasUnreadAdminMessages) {
+                await chat.save();
             }
             return res.status(200).json({
                 success: true,
@@ -218,7 +260,7 @@ class ChatController {
                 from: "admin",
                 text: String(text).trim(),
                 timestamp: new Date(),
-                isRead: true,
+                isRead: false,
                 senderName: adminName,
             };
             chat.messages.push(message);

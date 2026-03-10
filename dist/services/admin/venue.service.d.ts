@@ -1,5 +1,6 @@
 import { IVenue } from "../../domain/entities/venue.model";
 export declare class VenueService {
+    private notificationService;
     createVenue(data: Partial<IVenue>, createdBy: string): Promise<IVenue>;
     getVenueById(venueId: string): Promise<IVenue | null>;
     getAllVenues(filters?: any): Promise<IVenue[]>;

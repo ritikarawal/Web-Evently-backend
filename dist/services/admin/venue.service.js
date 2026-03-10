@@ -2,7 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VenueService = void 0;
 const venue_model_1 = require("../../domain/entities/venue.model");
+const notification_service_1 = require("./notification.service");
 class VenueService {
+    constructor() {
+        this.notificationService = new notification_service_1.NotificationService();
+    }
     async createVenue(data, createdBy) {
         try {
             const venue = new venue_model_1.VenueModel({
@@ -10,6 +14,15 @@ class VenueService {
                 createdBy
             });
             await venue.save();
+            // Notify users who are interested in this category via their event history.
+            if (venue.recommendedCategory) {
+                try {
+                    await this.notificationService.notifyUsersForNewVenueByCategory(venue.recommendedCategory, venue.name);
+                }
+                catch (notificationError) {
+                    console.error("Failed to send new venue notifications:", notificationError);
+                }
+            }
             return venue;
         }
         catch (error) {

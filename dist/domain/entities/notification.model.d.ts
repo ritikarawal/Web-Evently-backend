@@ -3,7 +3,7 @@ export interface INotification extends Document {
     user: mongoose.Types.ObjectId;
     title: string;
     message: string;
-    type: 'event_approved' | 'event_declined' | 'event_updated' | 'general';
+    type: 'event_approved' | 'event_declined' | 'event_updated' | 'new_venue_category' | 'general';
     isRead: boolean;
     eventId?: mongoose.Types.ObjectId;
     createdAt: Date;

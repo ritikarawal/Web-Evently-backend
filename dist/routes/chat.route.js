@@ -12,6 +12,7 @@ router.get("/admin/user/:userId", auth_middleware_1.authMiddleware, chatControll
 router.post("/admin/user/:userId/send", auth_middleware_1.authMiddleware, chatController.sendAdminMessage.bind(chatController));
 // User routes
 router.get("/history", auth_middleware_1.authMiddleware, chatController.getChatHistory.bind(chatController));
+router.get("/unread-count", auth_middleware_1.authMiddleware, chatController.getUserUnreadCount.bind(chatController));
 router.post("/user/send", auth_middleware_1.authMiddleware, chatController.sendUserMessage.bind(chatController));
 exports.default = router;
 //# sourceMappingURL=chat.route.js.map

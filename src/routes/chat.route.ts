@@ -13,6 +13,7 @@ router.post("/admin/user/:userId/send", authMiddleware, chatController.sendAdmin
 
 // User routes
 router.get("/history", authMiddleware, chatController.getChatHistory.bind(chatController));
+router.get("/unread-count", authMiddleware, chatController.getUserUnreadCount.bind(chatController));
 router.post("/user/send", authMiddleware, chatController.sendUserMessage.bind(chatController));
 
 export default router;
